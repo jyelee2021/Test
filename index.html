@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSU Social Work PhD Program - Admission FAQ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            pointer-events: none;
+        }
+
+        .faq-categories {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .category-btn:hover {
+            border-color: #667eea;
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .faq-item.visible {
+            display: block;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-question {
+            padding: 16px;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: #333;
+            transition: background 0.3s;
+        }
+
+        .faq-question:hover {
+            background: #f0f0f0;
+        }
+
+        .faq-question .arrow {
+            transition: transform 0.3s;
+            color: #667eea;
+        }
+
+        .faq-item.open .faq-question {
+            background: #f0f0f0;
+        }
+
+        .faq-item.open .faq-question .arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 16px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: white;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 500px;
+            padding: 16px;
+        }
+
+        .faq-answer p {
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-answer ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer li {
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .category-tag {
+            display: inline-block;
+            background: #e8eaf6;
+            color: #667eea;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .no-results p {
+            font-size: 16px;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .contact-info {
+            background: #e8eaf6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .contact-info p {
+            margin: 5px 0;
+            color: #333;
+        }
+
+        .contact-info a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .faq-question {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 OSU Social Work PhD</h1>
+            <p>Admission Process FAQ</p>
+        </div>
+
+        <div class="content">
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search FAQs... (e.g., GRE, deadline, requirements)"
+                >
+                <span class="search-icon">🔍</span>
+            </div>
+
+            <div class="faq-categories">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="requirements">Requirements</button>
+                <button class="category-btn" data-category="application">Application</button>
+                <button class="category-btn" data-category="timeline">Timeline</button>
+                <button class="category-btn" data-category="other">Other</button>
+            </div>
+
+            <div id="faqContainer"></div>
+
+            <div class="contact-info">
+                <p><strong>Questions?</strong></p>
+                <p>PhD Coordinator: Jennifer Nakayama</p>
+                <p>📧 <a href="mailto:nakayama.7@osu.edu">nakayama.7@osu.edu</a> | 📞 (614) 292-6188</p>
+                <p style="margin-top: 10px; font-size: 12px;">
+                    <a href="https://csw.osu.edu/academics/phd/" target="_blank" style="color: #667eea;">Visit the PhD Program Website →</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Information current as of Fall 2025. Please verify with the College of Social Work for the most up-to-date details.</p>
+        </div>
+    </div>
+
+    <script>
+        const faqData = [
+            {
+                category: 'requirements',
+                question: 'What are the GRE score requirements?',
+                answer: 'Target scores of 40th percentile or higher for both Verbal and Quantitative sections, and 3.5 or higher for the Writing section are recommended.'
+            },
+            {
+                category: 'requirements',
+                question: 'What degree is required for admission?',
+                answer: 'You must have either:<ul><li>A Master\'s degree in Social Work (MSW) or a related field, OR</li><li>A Bachelor\'s degree in Social Work or a related field</li></ul>Students with a Bachelor\'s degree can apply for the MSW+PhD combined program.'
+            },
+            {
+                category: 'requirements',
+                question: 'What coursework is required?',
+                answer: 'You must have completed:<ul><li>At least one research methods course with a B- or better</li><li>At least one statistics course with a B- or better</li></ul>These prerequisites ensure strong quantitative skills for doctoral research.'
+            },
+            {
+                category: 'requirements',
+                question: 'What GPA is required?',
+                answer: '<p><strong>For MSW+PhD programs:</strong> A combined undergraduate GPA of 3.5 or higher is required.</p><p><strong>For PhD-only programs:</strong> A strong graduate GPA is expected. Contact the program for specific requirements for your situation.</p>'
+            },
+            {
+                category: 'requirements',
+                question: 'Do I need to find a faculty advisor before applying?',
+                answer: 'Yes. You must identify three College of Social Work faculty members whose research interests align with your proposed research focus. These faculty members will serve as potential Graduate Associate supervisors. Review faculty profiles on the department website to identify good matches.'
+            },
+            {
+                category: 'application',
+                question: 'What documents do I need to submit?',
+                answer: '<p>Your application must include:</p><ul><li>Completed application form</li><li>Official transcripts from all colleges/universities attended</li><li>GRE score report</li><li>Statement of purpose/research interest (for PhD only)</li><li>MSW statement (for MSW+PhD applicants)</li><li>Letters of recommendation (typically 3)</li><li>CV or resume</li><li>TOEFL scores (if international student, if applicable)</li></ul><p>Check the application portal for any additional requirements.</p>'
+            },
+            {
+                category: 'application',
+                question: 'How do I apply?',
+                answer: '<p>Applications are submitted through The Ohio State University Graduate Admissions portal at <a href="https://gpadmissions.osu.edu" target="_blank">gpadmissions.osu.edu</a></p><p>Steps:</p><ul><li>Create an account on the Graduate Admissions website</li><li>Complete the online application form</li><li>Upload required documents</li><li>Submit application and pay the application fee</li><li>Request official transcripts and recommendation letters be sent directly</li></ul>'
+            },
+            {
+                category: 'timeline',
+                question: 'What is the application deadline?',
+                answer: '<p>For <strong>Autumn 2026 admission</strong>: All application documents must be received and considered complete by <strong>December 3</strong>.</p><p>Check the program website for future year deadlines, as they may vary.</p>'
+            },
+            {
+                category: 'timeline',
+                question: 'When will I hear about my admission decision?',
+                answer: 'Admission decisions are typically made in early spring (February-March). Decisions are communicated through the Graduate Admissions portal. You can also contact the PhD Coordinator for status updates.'
+            },
+            {
+                category: 'timeline',
+                question: 'When does the program start?',
+                answer: 'The PhD program begins in Autumn (Fall semester). Admitted students typically begin in the fall following the admission decision, allowing time for preparation and relocation if needed.'
+            },
+            {
+                category: 'other',
+                question: 'How long is the PhD program?',
+                answer: 'The PhD program typically takes 4-5 years to complete, depending on your prior education and research focus. Students with an MSW typically progress more quickly than those entering with a bachelor\'s degree.'
+            },
+            {
+                category: 'other',
+                question: 'What is the difference between the PhD and MSW+PhD programs?',
+                answer: '<p><strong>PhD only:</strong> Requires a prior master\'s degree (MSW or related field). Takes 4-5 years.</p><p><strong>MSW+PhD:</strong> For bachelor\'s degree holders. Combines social work coursework with doctoral training. Takes 5-6 years.</p><p>Both lead to the same PhD credential and prepare graduates for research and teaching careers.</p>'
+            },
+            {
+                category: 'other',
+                question: 'Is financial support available?',
+                answer: 'Many doctoral students receive funding through graduate assistantships, scholarships, or fellowships. The amount and type of support varies. Contact the Graduate Office or PhD Coordinator for details about funding opportunities.'
+            },
+            {
+                category: 'other',
+                question: 'What research areas does the program focus on?',
+                answer: 'The PhD program has faculty with expertise in various areas of social work research. Common areas include:<ul><li>Mental health and behavioral health</li><li>Family and child welfare</li><li>Aging and gerontology</li><li>Community and macro practice</li><li>Health disparities and vulnerable populations</li></ul>Review faculty profiles to learn about their specific research interests.'
+            },
+            {
+                category: 'other',
+                question: 'Can I apply if I have an international degree?',
+                answer: 'Yes, you can apply with an international degree. If your degree is not from a US institution, you may need to submit official course-by-course credential evaluations from services like NACES or WES. International applicants must also demonstrate English proficiency (typically via TOEFL) unless your degree was from an English-speaking institution.'
+            },
+            {
+                category: 'other',
+                question: 'Who should I contact with questions?',
+                answer: '<p>For admission questions, contact:</p><p><strong>Jennifer Nakayama, PhD Coordinator</strong><br>📧 <a href="mailto:nakayama.7@osu.edu">nakayama.7@osu.edu</a><br>📞 (614) 292-6188</p><p>You can also visit the College of Social Work website or attend an information session.</p>'
+            }
+        ];
+
+        let currentCategory = 'all';
+        let searchTerm = '';
+
+        function renderFAQ() {
+            const container = document.getElementById('faqContainer');
+            let filteredData = faqData;
+
+            // Filter by category
+            if (currentCategory !== 'all') {
+                filteredData = filteredData.filter(item => item.category === currentCategory);
+            }
+
+            // Filter by search term
+            if (searchTerm) {
+                filteredData = filteredData.filter(item =>
+                    item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    item.answer.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+
+            if (filteredData.length === 0) {
+                container.innerHTML = '<div class="no-results"><p>No FAQs found. Try adjusting your search or category filter.</p></div>';
+                return;
+            }
+
+            container.innerHTML = filteredData.map((item, index) => `
+                <div class="faq-item" data-index="${index}">
+                    <span class="category-tag">${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</span>
+                    <div class="faq-question">
+                        <span>${item.question}</span>
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        ${item.answer}
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.faq-question').forEach(question => {
+                question.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('open');
+                });
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            searchTerm = e.target.value;
+            renderFAQ();
+        });
+
+        // Category buttons
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentCategory = this.dataset.category;
+                document.getElementById('searchInput').value = '';
+                searchTerm = '';
+                renderFAQ();
+            });
+        });
+
+        // Initial render
+        renderFAQ();
+    </script>
+</body>
+</html>
