@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - claude/osu-social-work-phd-chatbot-8f2jng
+      - claude/child-welfare-ethics-checklist-a9rk8h
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -24,13 +26,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Publish only the AI Tool Quick Check, not the whole repository.
+      - name: Stage public files
+        run: |
+          mkdir _site
+          cp ai-tool-checklist.html _site/index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
