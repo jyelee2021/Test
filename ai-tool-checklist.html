@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Tool Quick Check</title>
+<style>
+    :root {
+        --bg: #f4f6f8; --card: #fff; --text: #1f2933; --muted: #5b6770; --line: #d8dee4;
+        --accent: #2b5d8a; --yes: #1f7a4d; --no: #b3261e; --unsure: #9a6700;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.5; font-size: 17px; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 50px; }
+    h1 { font-size: 26px; line-height: 1.2; }
+    .lead { color: var(--muted); margin: 6px 0 14px; }
+    input[type=text] { width: 100%; padding: 10px 12px; font-size: 16px; border: 1px solid var(--line);
+                       border-radius: 8px; background: #fff; color: var(--text); }
+    .bar-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; }
+    .bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+    .bar div { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+    h2 { font-size: 18px; margin: 22px 0 4px; display: flex; gap: 8px; align-items: center; }
+    h2 span { background: var(--accent); color: #fff; width: 26px; height: 26px; border-radius: 50%;
+              display: inline-flex; align-items: center; justify-content: center; font-size: 14px; flex: none; }
+    .q { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-top: 8px; }
+    .q.flag { border-color: var(--no); background: #fff8f7; }
+    .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .qt { font-weight: 600; }
+    details { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    summary { cursor: pointer; color: var(--accent); }
+    .opts { display: flex; gap: 8px; margin-top: 10px; }
+    .opts input { position: absolute; opacity: 0; pointer-events: none; }
+    .opts label { cursor: pointer; padding: 8px 0; width: 92px; text-align: center; border: 2px solid var(--line);
+                  border-radius: 8px; background: #fff; font-size: 15px; user-select: none; }
+    .opts input:focus-visible + label { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .opts input[value=yes]:checked + label { background: var(--yes); border-color: var(--yes); color: #fff; }
+    .opts input[value=no]:checked + label { background: var(--no); border-color: var(--no); color: #fff; }
+    .opts input[value=unsure]:checked + label { background: var(--unsure); border-color: var(--unsure); color: #fff; }
+    #result { margin-top: 26px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+    .verdict { padding: 12px 14px; border-radius: 8px; font-weight: 600; }
+    .v-none { background: #e6eef5; color: var(--accent); font-weight: 400; }
+    .v-good { background: #e6f4ec; color: var(--yes); }
+    .v-mid { background: #fff4d6; color: #7a5200; }
+    .v-bad { background: #fde8e6; color: var(--no); }
+    #ask { margin: 14px 0 0 22px; }
+    #ask li { margin-bottom: 8px; }
+    #ask small { display: block; color: var(--muted); }
+    #askHead { margin-top: 14px; font-weight: 600; display: none; }
+    .btns { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    button { font-size: 16px; padding: 10px 18px; border-radius: 8px; border: 2px solid var(--accent);
+             background: var(--accent); color: #fff; cursor: pointer; }
+    button.alt { background: #fff; color: var(--accent); }
+    footer { margin-top: 22px; font-size: 13px; color: var(--muted); }
+    @media print {
+        body { background: #fff; } .bar-wrap, .btns, details { display: none; }
+        .q { break-inside: avoid; } .opts input:not(:checked) + label { color: #aaa; }
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <h1>AI Tool Quick Check</h1>
+    <p class="lead">Before you use a predictive tool, chatbot or other AI tool.</p>
+    <input type="text" id="tool" placeholder="Tool name (optional)" aria-label="Tool name">
+
+    <div class="bar-wrap"><div class="bar"><div id="bar"></div></div></div>
+    <div id="list"></div>
+
+    <div id="result">
+        <div id="verdict" class="verdict v-none"></div>
+        <div id="askHead">Ask the vendor or researcher:</div>
+        <ol id="ask"></ol>
+        <div class="btns">
+            <button type="button" id="print">Print / save PDF</button>
+            <button type="button" class="alt" id="reset">Start over</button>
+        </div>
+    </div>
+
+    <footer>
+        A screening aid, not a verdict or professional advice. Nothing you enter leaves your device.
+        Based on the ETHICS framework (Lee et al., 2025, <i>J. Soc. Soc. Work Res.</i>, doi:10.1086/739116).
+    </footer>
+</div>
+
+<script>
+/* =====================================================================
+   EDIT HERE. This is the only part you need to change to update wording.
+   (See EDITING-GUIDE.md for step-by-step instructions.)
+
+   Each question looks like this:
+       { q: "The question people see",
+         hint: "Optional. Small help text behind a 'What to look for' link. Use \"\" for none.",
+         ask: "What to ask when the answer is No or Not sure",
+         key: true },     <- add "key: true" if a "No" here should trigger the red STOP message.
+                              Leave it out (or write key: false) for normal questions.
+
+   Rules: keep the quote marks and the comma at the end of each question line group.
+   To add a question: copy one whole { ... }, block, paste it, and change the words.
+   To delete one: delete its whole { ... }, block.
+   ===================================================================== */
+
+var TITLE_LEAD = "Before you use a predictive tool, chatbot or other AI tool.";
+
+var SECTIONS = [
+  { name: "Equity", questions: [
+    { q: "Was it built and tested with people like the ones you serve?",
+      hint: "Same race, income, region, and family situations.",
+      ask: "Who was in the data used to build and test it? Do they match our clients?" },
+    { q: "Does it work equally well for different groups?",
+      hint: "Look for results split out by race, gender, income or disability.",
+      ask: "Can you show accuracy and error rates for each group?" },
+    { q: "Has anyone checked whether it treats some families unfairly?",
+      hint: "",
+      ask: "What bias testing was done, and what did it find?" }
+  ]},
+  { name: "Transparency", questions: [
+    { q: "Can they explain in plain words what it does and doesn't do?",
+      hint: "If nobody can explain it simply, be careful.",
+      ask: "What exactly does it do, and what should it never be used for?" },
+    { q: "Is there independent, published research showing it works?",
+      hint: "Not just the company's own claims.",
+      ask: "Where is the outside evidence that it works for our kind of use?" },
+    { q: "Do you know what data goes in, where it is stored, and who sees it?",
+      hint: "",
+      ask: "Where does our data go? Is it stored or used to train the AI?" }
+  ]},
+  { name: "Human-Centeredness", questions: [
+    { q: "Does a trained person make the final decision, not the tool?",
+      hint: "",
+      ask: "Who reviews the tool's output before anything happens to a family?",
+      key: true },
+    { q: "Can people be told it was used, and challenge or opt out?",
+      hint: "",
+      ask: "How are families told about it, and how can they object or appeal?" },
+    { q: "Can a person see why it gave a particular answer?",
+      hint: "A score with no reason is hard to question in court or in a case plan.",
+      ask: "Can it show why it gave this result for this person?" }
+  ]},
+  { name: "Integrity", questions: [
+    { q: "Was it tested in real settings like yours?",
+      hint: "Not only in a lab or a different state or system.",
+      ask: "Where was it tested, and how similar is that to our setting?" },
+    { q: "Has it been checked for wrong or made-up answers?",
+      hint: "Chatbots can state false things with confidence.",
+      ask: "How often is it wrong, and how do you catch mistakes?",
+      key: true },
+    { q: "Is a named person or company accountable, and is staff trained to use it?",
+      hint: "",
+      ask: "Who is responsible if it makes a harmful mistake? What training is provided?" }
+  ]},
+  { name: "Collaboration", questions: [
+    { q: "Were families, frontline staff or community members involved in building or testing it?",
+      hint: "",
+      ask: "Who outside the tech team helped design and review it?" },
+    { q: "Is it clear who owns the data, and that it won't be sold or reused without consent?",
+      hint: "",
+      ask: "Who owns our data? Can it be shared or reused for anything else?" },
+    { q: "Is there an easy way to report problems and get them fixed?",
+      hint: "",
+      ask: "How do we report a problem, and how fast do you respond?" }
+  ]},
+  { name: "Safety", questions: [
+    { q: "Were the benefits and possible harms weighed in writing?",
+      hint: "Harms include privacy loss, stigma, and wrongly labeling a family.",
+      ask: "Can we see the written risk and benefit review?",
+      key: true },
+    { q: "Are sensitive data (children, health, court records) strongly protected?",
+      hint: "",
+      ask: "What security and privacy protections apply to sensitive records?",
+      key: true },
+    { q: "Is it checked after launch, and can it be switched off quickly?",
+      hint: "",
+      ask: "How is it monitored, and what would make you stop using it?" }
+  ]}
+];
+
+/* Result thresholds. Change the numbers if you want the tool stricter or looser. */
+var CAUTION_IF_NO_OR_UNSURE_AT_LEAST = 5;   /* this many No/Not sure answers = "Use caution" */
+
+/* Result messages (plain words). */
+var MSG_START   = "Answer the questions to see your result.";
+var MSG_STOP    = "Stop and ask first. A key safeguard looks missing.";
+var MSG_CAUTION = "Use caution. Several answers are missing or unclear.";
+var MSG_KEEP    = "Keep going.";
+var MSG_GOOD    = "Looks well handled. Still follow up on anything marked Not sure.";
+/* ===================== END OF EDIT-HERE SECTION ===================== */
+
+
+/* ---- Code below runs the page. You should not need to change it. ---- */
+var STORE = "aiToolQuickCheck.v1";
+var state = { a: {}, tool: "" };
+try { var s = JSON.parse(localStorage.getItem(STORE)); if (s && s.a) state = s; } catch (e) {}
+function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
+function esc(t) { return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+document.querySelector(".lead").textContent = TITLE_LEAD;
+
+var ALL = [];
+SECTIONS.forEach(function (sec, si) {
+    sec.questions.forEach(function (q, qi) { ALL.push({ id: si + "_" + qi, sec: sec.name, q: q }); });
+});
+
+function build() {
+    var h = "";
+    SECTIONS.forEach(function (sec, si) {
+        h += '<h2><span>' + (si + 1) + '</span>' + esc(sec.name) + '</h2>';
+        sec.questions.forEach(function (q, qi) {
+            var id = si + "_" + qi;
+            h += '<fieldset class="q" id="q' + id + '" style="border:1px solid var(--line)"><legend style="position:absolute;opacity:0">' + esc(q.q) + '</legend>';
+            h += '<div class="qt">' + esc(q.q) + '</div>';
+            if (q.hint) h += '<details><summary>What to look for</summary>' + esc(q.hint) + '</details>';
+            h += '<div class="opts">';
+            [["yes","Yes"],["no","No"],["unsure","Not sure"]].forEach(function (o) {
+                h += '<span><input type="radio" name="' + id + '" id="r' + id + o[0] + '" value="' + o[0] + '">' +
+                     '<label for="r' + id + o[0] + '">' + o[1] + '</label></span>';
+            });
+            h += '</div></fieldset>';
+        });
+    });
+    document.getElementById("list").innerHTML = h;
+}
+
+function update() {
+    var answered = 0, weak = 0, stops = 0, asks = [];
+    ALL.forEach(function (x) {
+        var a = state.a[x.id];
+        var flagged = (a === "no" || a === "unsure");
+        document.getElementById("q" + x.id).classList.toggle("flag", a === "no");
+        if (a) answered++;
+        if (flagged) {
+            weak++;
+            asks.push({ t: x.q.ask, s: x.sec, no: a === "no" });
+            if (a === "no" && x.q.key) stops++;
+        }
+    });
+    document.getElementById("bar").style.width = (answered / ALL.length * 100) + "%";
+
+    var v = document.getElementById("verdict");
+    if (!answered) { v.className = "verdict v-none"; v.textContent = MSG_START; }
+    else if (stops) { v.className = "verdict v-bad"; v.textContent = MSG_STOP; }
+    else if (weak >= CAUTION_IF_NO_OR_UNSURE_AT_LEAST) { v.className = "verdict v-mid"; v.textContent = MSG_CAUTION; }
+    else if (answered < ALL.length) { v.className = "verdict v-none"; v.textContent = MSG_KEEP + " " + (ALL.length - answered) + " left."; }
+    else { v.className = "verdict v-good"; v.textContent = MSG_GOOD; }
+
+    asks.sort(function (a, b) { return (b.no ? 1 : 0) - (a.no ? 1 : 0); });
+    document.getElementById("ask").innerHTML = asks.map(function (a) {
+        return "<li>" + esc(a.t) + "<small>" + esc(a.s) + "</small></li>";
+    }).join("");
+    document.getElementById("askHead").style.display = asks.length ? "block" : "none";
+}
+
+document.addEventListener("change", function (e) {
+    if (e.target.type === "radio") { state.a[e.target.name] = e.target.value; save(); update(); }
+});
+document.getElementById("tool").addEventListener("input", function (e) { state.tool = e.target.value; save(); });
+document.getElementById("print").addEventListener("click", function () { window.print(); });
+document.getElementById("reset").addEventListener("click", function () {
+    if (!confirm("Clear all answers?")) return;
+    state = { a: {}, tool: "" }; save();
+    document.querySelectorAll("input[type=radio]").forEach(function (r) { r.checked = false; });
+    document.getElementById("tool").value = ""; update(); window.scrollTo(0, 0);
+});
+
+build();
+Object.keys(state.a).forEach(function (id) {
+    var el = document.getElementById("r" + id + state.a[id]); if (el) el.checked = true;
+});
+document.getElementById("tool").value = state.tool || "";
+update();
+</script>
+</body>
+</html>
