@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Research Ethics Checklist</title>
+<style>
+    :root {
+        --bg: #f4f6f8;
+        --card: #ffffff;
+        --text: #1f2933;
+        --muted: #5b6770;
+        --line: #d8dee4;
+        --accent: #2b5d8a;
+        --accent-soft: #e6eef5;
+        --yes: #1f7a4d;
+        --no: #b3261e;
+        --unsure: #9a6700;
+        --na: #6b7280;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.55;
+        font-size: 17px;
+    }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+    header h1 { font-size: 28px; line-height: 1.2; margin-bottom: 8px; }
+    header p { color: var(--muted); }
+    .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .card h2 { font-size: 20px; margin-bottom: 6px; }
+    .card p.sub { color: var(--muted); font-size: 15px; margin-bottom: 12px; }
+    ol.how { margin-left: 22px; }
+    ol.how li { margin-bottom: 4px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; font-size: 14px; }
+    .pill { padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); background: #fff; }
+    label.field { display: block; font-weight: 600; margin-bottom: 4px; font-size: 15px; }
+    input[type=text], select {
+        width: 100%; padding: 10px 12px; font-size: 16px; border: 1px solid var(--line);
+        border-radius: 8px; background: #fff; color: var(--text); margin-bottom: 12px;
+    }
+    .toolbar {
+        position: sticky; top: 0; z-index: 5; background: var(--bg);
+        padding: 10px 0; margin-top: 12px; border-bottom: 1px solid var(--line);
+    }
+    .progress-row { display: flex; align-items: center; gap: 12px; }
+    .bar { flex: 1; height: 10px; background: var(--line); border-radius: 999px; overflow: hidden; }
+    .bar > div { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+    #progressText { font-size: 14px; color: var(--muted); white-space: nowrap; }
+
+    .principle { border-left: 5px solid var(--accent); }
+    .principle h2 { display: flex; gap: 10px; align-items: baseline; }
+    .principle .num {
+        background: var(--accent); color: #fff; width: 28px; height: 28px; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center; font-size: 15px; flex: none;
+    }
+    .principle .goal { font-style: italic; color: var(--muted); margin-bottom: 10px; }
+
+    .q { border-top: 1px solid var(--line); padding: 14px 0; }
+    .q:first-of-type { border-top: none; }
+    .q .text { font-weight: 600; }
+    .q .hint { color: var(--muted); font-size: 15px; margin-top: 2px; }
+    .q .ask { font-size: 15px; margin-top: 6px; background: var(--accent-soft); padding: 6px 10px; border-radius: 6px; display: none; }
+    .q.flag .ask { display: block; }
+    .q.flag { background: #fff8f7; margin: 0 -12px; padding: 14px 12px; border-radius: 8px; }
+    .answers { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .answers input { position: absolute; opacity: 0; pointer-events: none; }
+    .answers label {
+        cursor: pointer; padding: 7px 14px; border: 2px solid var(--line); border-radius: 8px;
+        font-size: 15px; background: #fff; min-width: 84px; text-align: center; user-select: none;
+    }
+    .answers input:focus-visible + label { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .answers input[value=yes]:checked + label { background: var(--yes); border-color: var(--yes); color: #fff; }
+    .answers input[value=no]:checked + label { background: var(--no); border-color: var(--no); color: #fff; }
+    .answers input[value=unsure]:checked + label { background: var(--unsure); border-color: var(--unsure); color: #fff; }
+    .answers input[value=na]:checked + label { background: var(--na); border-color: var(--na); color: #fff; }
+
+    .stop { border-left: 5px solid var(--no); }
+    #summary h2 { margin-bottom: 8px; }
+    .result { padding: 12px 14px; border-radius: 8px; font-weight: 600; margin-bottom: 12px; }
+    .result.good { background: #e6f4ec; color: var(--yes); }
+    .result.mid { background: #fff4d6; color: #7a5200; }
+    .result.bad { background: #fde8e6; color: var(--no); }
+    .result.none { background: var(--accent-soft); color: var(--accent); font-weight: 400; }
+    .tally { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 14px; }
+    .tally div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 15px; }
+    .tally b { display: block; font-size: 15px; }
+    #followups { margin-left: 22px; }
+    #followups li { margin-bottom: 10px; }
+    #followups .p { font-size: 13px; color: var(--muted); display: block; }
+    textarea {
+        width: 100%; min-height: 90px; padding: 10px 12px; font-size: 16px; border: 1px solid var(--line);
+        border-radius: 8px; font-family: inherit; margin-top: 6px;
+    }
+    .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    button {
+        font-size: 16px; padding: 10px 18px; border-radius: 8px; border: 2px solid var(--accent);
+        background: var(--accent); color: #fff; cursor: pointer;
+    }
+    button.secondary { background: #fff; color: var(--accent); }
+    button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    footer { margin-top: 26px; font-size: 14px; color: var(--muted); }
+    footer p { margin-bottom: 8px; }
+
+    @media print {
+        body { background: #fff; font-size: 12pt; }
+        .toolbar, .buttons, .legend { display: none; }
+        .card { break-inside: avoid; border-color: #999; }
+        .q { break-inside: avoid; }
+        .q .ask { display: none !important; }
+        .answers label { border-color: #999; }
+        .answers input:not(:checked) + label { color: #999; }
+        #followups .p { color: #444; }
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+    <h1>Is This AI-Assisted Research Ethical?</h1>
+    <p>A plain-language checklist for lawyers, judges, magistrates, CASAs, GALs, case managers, clinicians and other professionals who read or rely on research that used AI.</p>
+</header>
+
+<div class="card">
+    <h2>How to use this</h2>
+    <ol class="how">
+        <li>Have the study, report or summary in front of you. If you can, ask the researcher too.</li>
+        <li>Answer each question. If you can't tell from what you have, choose <b>Not sure</b>. That is useful information.</li>
+        <li>At the bottom, you'll get a short list of questions to ask before you rely on the research.</li>
+    </ol>
+    <div class="legend">
+        <span class="pill"><b>Yes</b> = clearly shown</span>
+        <span class="pill"><b>No</b> = missing or a problem</span>
+        <span class="pill"><b>Not sure</b> = can't tell</span>
+        <span class="pill"><b>N/A</b> = doesn't apply</span>
+    </div>
+    <p class="sub" style="margin-top:12px;">Nothing you enter leaves your device. Answers are saved only in this browser.</p>
+</div>
+
+<div class="card">
+    <h2>About the research</h2>
+    <label class="field" for="title">Study, report or tool name</label>
+    <input type="text" id="title" placeholder="e.g., Risk-scoring study for county intake">
+    <label class="field" for="role">Your role</label>
+    <select id="role">
+        <option value="">Choose one</option>
+        <option>Judge / magistrate</option>
+        <option>Attorney / GAL / CASA</option>
+        <option>Case manager / caseworker</option>
+        <option>Clinician / therapist</option>
+        <option>Administrator / policy maker</option>
+        <option>Other</option>
+    </select>
+    <label class="field" for="use">How was AI used?</label>
+    <select id="use">
+        <option value="">Choose one</option>
+        <option>Predicting or scoring people (risk, outcomes, needs)</option>
+        <option>Analyzing interviews, case notes or records</option>
+        <option>Searching or summarizing other research</option>
+        <option>Writing or editing the report</option>
+        <option>I'm not sure</option>
+        <option>Other</option>
+    </select>
+</div>
+
+<div class="toolbar">
+    <div class="progress-row">
+        <div class="bar"><div id="bar"></div></div>
+        <span id="progressText">0 of 0 answered</span>
+    </div>
+</div>
+
+<div id="checklist"></div>
+
+<div class="card" id="summary">
+    <h2>Your results</h2>
+    <div id="result" class="result none">Answer the questions above to see your results.</div>
+    <div class="tally" id="tally"></div>
+    <div id="followWrap" style="display:none">
+        <h3 style="font-size:17px;margin-bottom:6px;">Questions to ask before you rely on this research</h3>
+        <ol id="followups"></ol>
+    </div>
+    <label class="field" for="notes" style="margin-top:16px;">Your notes</label>
+    <textarea id="notes" placeholder="Anything else you noticed, or who you plan to ask."></textarea>
+    <div class="buttons">
+        <button type="button" id="printBtn">Print or save as PDF</button>
+        <button type="button" class="secondary" id="resetBtn">Start over</button>
+    </div>
+</div>
+
+<footer>
+    <p><b>This is a screening tool, not a verdict.</b> It helps you spot what to ask. It cannot prove research is sound or unsound, and it is not legal, clinical or professional advice. If the stakes are high (a court decision, a removal, a treatment plan), get a qualified expert to review the research.</p>
+    <p>Based on the ETHICS framework: Lee, J. Y., Pace, G. T., Cha, H., Rao, S., Hahm, H. C., An, R., &amp; Denby-Brinson, R. (2025). ETHICS: An ethical framework for artificial intelligence (AI) use in social work research. <i>Journal of the Society for Social Work and Research, 16</i>(4), 699&ndash;711. https://doi.org/10.1086/739116. The framework was written for social work researchers. This checklist adapts its six principles for professionals who <i>read and use</i> AI-assisted research.</p>
+</footer>
+
+</div>
+
+<script>
+/* Each principle: plain-language goal, and questions. `ask` is the follow-up shown when the answer is No or Not sure. */
+var PRINCIPLES = [
+    {
+        id: "equity", name: "Equity",
+        goal: "Is it fair to everyone it is about, especially families and groups who are often treated unfairly?",
+        qs: [
+            { t: "Does the research include the kinds of people it is being used on?",
+              h: "For example, the same race, income level, region, and family type as the people you serve.",
+              a: "Who was in the data? Do they look like the people this will be applied to?" },
+            { t: "Did the researchers check whether the AI works equally well for different groups?",
+              h: "Look for results broken out by race, gender, income or disability, not just one overall number.",
+              a: "Did you compare accuracy and error rates across groups? What did you find?" },
+            { t: "If they found unfairness or gaps in the data, did they say what they did about it?",
+              h: "Missing records and skewed data are common in child welfare and court data.",
+              a: "What gaps or bias did you find, and what did you do to fix or limit them?" },
+            { t: "Does the research say how it will help the communities most affected, not just the researchers or agencies?",
+              h: "Also watch for whether people or groups were left out on purpose or by accident.",
+              a: "Who benefits from this work, and who could be worse off?" }
+        ]
+    },
+    {
+        id: "transparency", name: "Transparency",
+        goal: "Are they open about what AI was used, how, and where its limits are?",
+        qs: [
+            { t: "Does the research name the specific AI tool and say what it was used for?",
+              h: "\"We used AI\" is not enough. You want the tool name, and whether it was used for searching, analyzing, predicting or writing.",
+              a: "Which AI tool did you use, and for which steps?" },
+            { t: "Does it explain the limits and possible biases of the AI?",
+              h: "Honest research says what the AI can't do well.",
+              a: "What are the known weaknesses of this tool, and how could they affect the results?" },
+            { t: "Were participants and the ethics review board (IRB) told AI would be used?",
+              h: "This matters most when the data is sensitive, since some AI companies store what is typed in.",
+              a: "Did the consent forms and ethics approval mention AI? Where does the data go?" },
+            { t: "Is it clear who is responsible if something is wrong?",
+              h: "A named person or team should stand behind the results. \"The AI said so\" is not an answer.",
+              a: "Who is accountable for these findings, and how can I reach them?" }
+        ]
+    },
+    {
+        id: "human", name: "Human-Centeredness",
+        goal: "Does it respect people's dignity, choices and privacy, with real humans in charge?",
+        qs: [
+            { t: "Were people told, in plain language, how AI would use their information?",
+              h: "Look for consent that explains AI in words a regular person would understand.",
+              a: "How did you explain AI use to participants? Could they say no?" },
+            { t: "Could people opt out of having their data processed by AI without losing services or benefits?",
+              h: "Choice should be real, especially for people in the child welfare or court system.",
+              a: "What happened if someone did not want AI to be used on their information?" },
+            { t: "Does a person review the AI's results before anything is decided?",
+              h: "No important decision about a child or family should be made by AI alone.",
+              a: "Who checks the AI's output, and what happens when it looks wrong?" },
+            { t: "Were the people or communities being studied asked to check the results?",
+              h: "For example, an advisory group, a pilot test, or feedback from families.",
+              a: "Did people with lived experience see or shape the findings?" }
+        ]
+    },
+    {
+        id: "integrity", name: "Integrity",
+        goal: "Did qualified people stay in charge and double-check the AI, instead of just trusting it?",
+        qs: [
+            { t: "Is a named, qualified person responsible for the whole project?",
+              h: "AI can be an assistant. A human expert should be the lead.",
+              a: "Who led this work, and what is their expertise?" },
+            { t: "Did people check the AI's work by hand?",
+              h: "For example, spot-checking a sample of coded interviews, or verifying every reference.",
+              a: "How did you check the AI's output? What errors did you find and fix?" },
+            { t: "Are the sources real and do they actually say what the report claims?",
+              h: "AI can make up studies or quotes that look real. Pick two or three citations and look them up.",
+              a: "Can you show me the original sources for these key claims?" },
+            { t: "Do the researchers understand the AI tool they used?",
+              h: "Look for experience with this type of AI, or training, or a team member who has it.",
+              a: "What experience or training does the team have with this tool?" }
+        ]
+    },
+    {
+        id: "collaboration", name: "Collaboration",
+        goal: "Were communities treated as partners, and do they benefit and keep control of their data?",
+        qs: [
+            { t: "Were community members or people with lived experience involved, not just studied?",
+              h: "Partners help make sure findings fit local reality and culture.",
+              a: "How were community members involved in design and in reviewing results?" },
+            { t: "Is it clear who owns and controls the data, and who can use it?",
+              h: "Look for an agreement about access, sharing, and how long data is kept.",
+              a: "Is there a written agreement about who controls this data?" },
+            { t: "Are the community's data and privacy protected from being used in ways they didn't agree to?",
+              h: "Data about families should not be sold, reused or shared beyond what people agreed to.",
+              a: "Could this data be used for anything other than this study? Who else can see it?" },
+            { t: "Does the community get something back from the research?",
+              h: "For example, shared credit, training, or tools that help local organizations.",
+              a: "What did the community receive in return for its data and time?" }
+        ]
+    },
+    {
+        id: "safety", name: "Safety",
+        goal: "Do the real benefits clearly outweigh the risks, with a plan to stop if things go wrong?",
+        qs: [
+            { t: "Did they write down the expected benefits and the possible harms before starting?",
+              h: "Harms to think about: privacy loss, people being identified, stigma, stereotypes, and wrongly labeling a family in a way that could affect services.",
+              a: "What harms did you plan for, and how did you weigh them against the benefits?" },
+            { t: "Is the AI use limited to what is truly needed, with as little personal information as possible?",
+              h: "Using less-sensitive data or a simpler method is safer when it works as well.",
+              a: "Was there a less risky way to do this? Why was AI needed?" },
+            { t: "Was the AI tested before real use, and is it monitored afterward?",
+              h: "Look for testing results and a plan to keep checking over time.",
+              a: "How was it tested? How will you know if it starts making mistakes?" },
+            { t: "Is there a plan to pause or stop the AI if problems appear?",
+              h: "\"Stop\" rules should be set in advance, not decided after harm happens.",
+              a: "What would cause you to stop using it, and who decides?" }
+        ]
+    }
+];
+
+/* Questions that are especially serious if answered No. Shown in a red box if any are No. */
+var CRITICAL = [
+    "human_2",     /* person reviews AI results */
+    "integrity_2", /* checked by hand */
+    "integrity_3", /* sources real */
+    "safety_0"     /* harms considered */
+];
+
+var STORE_KEY = "aiResearchChecklist.v1";
+var state = { answers: {}, title: "", role: "", use: "", notes: "" };
+
+function load() {
+    try {
+        var raw = localStorage.getItem(STORE_KEY);
+        if (raw) { var s = JSON.parse(raw); if (s && s.answers) state = s; }
+    } catch (e) {}
+}
+function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function qid(p, i) { return p.id.replace("human", "human") + "_" + i; }
+
+function build() {
+    var html = "";
+    PRINCIPLES.forEach(function (p, pi) {
+        html += '<section class="card principle" aria-labelledby="h-' + p.id + '">';
+        html += '<h2 id="h-' + p.id + '"><span class="num">' + (pi + 1) + '</span>' + esc(p.name) + '</h2>';
+        html += '<p class="goal">' + esc(p.goal) + '</p>';
+        p.qs.forEach(function (q, i) {
+            var id = p.id + "_" + i;
+            html += '<fieldset class="q" id="q-' + id + '" style="border:none">';
+            html += '<legend class="text">' + esc(q.t) + '</legend>';
+            html += '<div class="hint">' + esc(q.h) + '</div>';
+            html += '<div class="answers" role="radiogroup">';
+            [["yes", "Yes"], ["no", "No"], ["unsure", "Not sure"], ["na", "N/A"]].forEach(function (o) {
+                var rid = "r-" + id + "-" + o[0];
+                html += '<span><input type="radio" name="' + id + '" id="' + rid + '" value="' + o[0] + '">' +
+                        '<label for="' + rid + '">' + o[1] + '</label></span>';
+            });
+            html += '</div>';
+            html += '<div class="ask"><b>Ask:</b> ' + esc(q.a) + '</div>';
+            html += '</fieldset>';
+        });
+        html += '</section>';
+    });
+    document.getElementById("checklist").innerHTML = html;
+}
+
+function restore() {
+    Object.keys(state.answers).forEach(function (id) {
+        var el = document.getElementById("r-" + id + "-" + state.answers[id]);
+        if (el) el.checked = true;
+    });
+    document.getElementById("title").value = state.title || "";
+    document.getElementById("role").value = state.role || "";
+    document.getElementById("use").value = state.use || "";
+    document.getElementById("notes").value = state.notes || "";
+}
+
+function update() {
+    var total = 0, answered = 0, c = { yes: 0, no: 0, unsure: 0, na: 0 };
+    var follow = [], critical = [];
+
+    PRINCIPLES.forEach(function (p) {
+        p.qs.forEach(function (q, i) {
+            var id = p.id + "_" + i;
+            total++;
+            var a = state.answers[id];
+            var box = document.getElementById("q-" + id);
+            var flagged = (a === "no" || a === "unsure");
+            box.classList.toggle("flag", flagged);
+            if (a) { answered++; c[a]++; }
+            if (flagged) {
+                follow.push({ p: p.name, a: q.a, no: a === "no" });
+                if (a === "no" && CRITICAL.indexOf(id) !== -1) critical.push(q.t);
+            }
+        });
+    });
+
+    document.getElementById("bar").style.width = (total ? answered / total * 100 : 0) + "%";
+    document.getElementById("progressText").textContent = answered + " of " + total + " answered";
+
+    document.getElementById("tally").innerHTML =
+        '<div><b style="color:var(--yes)">Yes</b>' + c.yes + '</div>' +
+        '<div><b style="color:var(--no)">No</b>' + c.no + '</div>' +
+        '<div><b style="color:var(--unsure)">Not sure</b>' + c.unsure + '</div>' +
+        '<div><b style="color:var(--na)">N/A</b>' + c.na + '</div>';
+
+    var res = document.getElementById("result");
+    var applicable = total - c.na;
+    if (answered === 0) {
+        res.className = "result none";
+        res.textContent = "Answer the questions above to see your results.";
+    } else if (critical.length) {
+        res.className = "result bad";
+        res.textContent = "Stop and ask first. A key safeguard looks missing. Do not rely on this research for important decisions until it is answered.";
+    } else if (c.no >= 4 || (c.no + c.unsure) >= Math.ceil(applicable / 3)) {
+        res.className = "result mid";
+        res.textContent = "Use caution. Several answers are missing or unclear. Get answers to the questions below before you rely on it.";
+    } else if (answered < total) {
+        res.className = "result none";
+        res.textContent = "Keep going. " + (total - answered) + " question" + (total - answered === 1 ? "" : "s") + " left.";
+    } else {
+        res.className = "result good";
+        res.textContent = "Looks well handled so far. Still ask about anything you marked Not sure, and get expert review for high-stakes decisions.";
+    }
+
+    var fw = document.getElementById("followWrap");
+    var ol = document.getElementById("followups");
+    var items = "";
+    if (critical.length) {
+        items += '<li style="list-style:none;margin-left:-22px"><div class="card stop" style="margin:0 0 12px"><b>Most serious gaps:</b><ul style="margin:6px 0 0 20px">' +
+                 critical.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul></div></li>';
+    }
+    follow.sort(function (x, y) { return (y.no ? 1 : 0) - (x.no ? 1 : 0); });
+    follow.forEach(function (f) {
+        items += '<li>' + esc(f.a) + '<span class="p">' + esc(f.p) + (f.no ? " · marked No" : " · marked Not sure") + '</span></li>';
+    });
+    ol.innerHTML = items;
+    fw.style.display = follow.length ? "block" : "none";
+}
+
+document.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t.type === "radio") { state.answers[t.name] = t.value; }
+    else if (t.id === "role") state.role = t.value;
+    else if (t.id === "use") state.use = t.value;
+    else return;
+    save(); update();
+});
+document.addEventListener("input", function (e) {
+    var id = e.target.id;
+    if (id === "title") state.title = e.target.value;
+    else if (id === "notes") state.notes = e.target.value;
+    else return;
+    save();
+});
+document.getElementById("printBtn").addEventListener("click", function () { window.print(); });
+document.getElementById("resetBtn").addEventListener("click", function () {
+    if (!confirm("Clear all your answers and notes?")) return;
+    state = { answers: {}, title: "", role: "", use: "", notes: "" };
+    save();
+    document.querySelectorAll("input[type=radio]").forEach(function (r) { r.checked = false; });
+    restore(); update();
+    window.scrollTo(0, 0);
+});
+
+load(); build(); restore(); update();
+</script>
+</body>
+</html>
