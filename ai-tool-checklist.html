@@ -57,7 +57,7 @@
     button.alt { background: #fff; color: var(--accent); }
     footer { margin-top: 22px; font-size: 13px; color: var(--muted); }
     @media print {
-        body { background: #fff; } .bar-wrap, .btns, details { display: none; }
+        body { background: #fff; } .bar-wrap, .btns, details, #printHint { display: none !important; }
         .q { break-inside: avoid; } .opts input:not(:checked) + label { color: #aaa; }
     }
 </style>
@@ -82,6 +82,10 @@
             <button type="button" id="print">Print / save PDF</button>
             <button type="button" class="alt" id="reset">Start over</button>
         </div>
+        <p id="printHint" style="display:none;margin-top:10px;font-size:14px;color:var(--muted)">
+            If no print window opened, press <b>Ctrl+P</b> (<b>Cmd+P</b> on a Mac) and choose <b>Save as PDF</b>.
+            This works best when you open the page directly in your browser, not inside another app.
+        </p>
     </div>
 
     <footer>
@@ -264,7 +268,10 @@ document.addEventListener("change", function (e) {
 });
 document.getElementById("tool").addEventListener("input", function (e) { state.tool = e.target.value; save(); });
 document.getElementById("purpose").addEventListener("input", function (e) { state.purpose = e.target.value; save(); });
-document.getElementById("print").addEventListener("click", function () { window.print(); });
+document.getElementById("print").addEventListener("click", function () {
+    document.getElementById("printHint").style.display = "block";
+    try { window.print(); } catch (e) {}
+});
 document.getElementById("reset").addEventListener("click", function () {
     if (!confirm("Clear all answers?")) return;
     state = { a: {}, tool: "", purpose: "" }; save();
