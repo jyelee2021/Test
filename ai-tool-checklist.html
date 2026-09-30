@@ -15,6 +15,9 @@
     .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 50px; }
     h1 { font-size: 26px; line-height: 1.2; }
     .lead { color: var(--muted); margin: 6px 0 14px; }
+    textarea { width: 100%; padding: 10px 12px; font-size: 16px; border: 1px solid var(--line); border-radius: 8px;
+               background: #fff; color: var(--text); font-family: inherit; min-height: 64px; resize: vertical; }
+    .fl { display: block; font-weight: 600; font-size: 15px; margin: 14px 0 4px; }
     input[type=text] { width: 100%; padding: 10px 12px; font-size: 16px; border: 1px solid var(--line);
                        border-radius: 8px; background: #fff; color: var(--text); }
     .bar-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; }
@@ -23,15 +26,16 @@
     h2 { font-size: 18px; margin: 22px 0 4px; display: flex; gap: 8px; align-items: center; }
     h2 span { background: var(--accent); color: #fff; width: 26px; height: 26px; border-radius: 50%;
               display: inline-flex; align-items: center; justify-content: center; font-size: 14px; flex: none; }
-    .q { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-top: 8px; }
+    .q { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 14px; margin-top: 10px; }
     .q.flag { border-color: var(--no); background: #fff8f7; }
     .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
     .qt { font-weight: 600; }
     details { font-size: 14px; color: var(--muted); margin-top: 4px; }
     summary { cursor: pointer; color: var(--accent); }
-    .opts { display: flex; gap: 8px; margin-top: 10px; }
+    .opts { display: flex; gap: 14px; margin-top: 14px; }
+    .opts span { flex: 1; max-width: 140px; }
     .opts input { position: absolute; opacity: 0; pointer-events: none; }
-    .opts label { cursor: pointer; padding: 8px 0; width: 92px; text-align: center; border: 2px solid var(--line);
+    .opts label { cursor: pointer; display: block; padding: 11px 0; width: 100%; text-align: center; border: 2px solid var(--line);
                   border-radius: 8px; background: #fff; font-size: 15px; user-select: none; }
     .opts input:focus-visible + label { outline: 3px solid var(--accent); outline-offset: 2px; }
     .opts input[value=yes]:checked + label { background: var(--yes); border-color: var(--yes); color: #fff; }
@@ -62,7 +66,10 @@
 <div class="wrap">
     <h1>AI Tool Quick Check</h1>
     <p class="lead">Before you use a predictive tool, chatbot or other AI tool.</p>
-    <input type="text" id="tool" placeholder="Tool name (optional)" aria-label="Tool name">
+    <label class="fl" for="tool">Name of the AI tool</label>
+    <input type="text" id="tool" placeholder="Tool name (optional)">
+    <label class="fl" for="purpose" id="purposeLabel"></label>
+    <textarea id="purpose" placeholder="A sentence or two"></textarea>
 
     <div class="bar-wrap"><div class="bar"><div id="bar"></div></div></div>
     <div id="list"></div>
@@ -100,25 +107,26 @@
    To delete one: delete its whole { ... }, block.
    ===================================================================== */
 
+var PURPOSE_QUESTION = "For what purpose are you expected to use the AI tool in your work?";
 var TITLE_LEAD = "Before you use a predictive tool, chatbot or other AI tool.";
 
 var SECTIONS = [
   { name: "Equity", questions: [
-    { q: "Was it built and tested with people like the ones you serve?",
-      hint: "Same race, income, region, and family situations.",
-      ask: "Who was in the data used to build and test it? Do they match our clients?" },
-    { q: "Does it work equally well for different groups?",
+    { q: "Is AI actually needed in this area of your work (or would a simpler tool do the job)?",
+      hint: "Bigger AI tools use more energy and water, and often more personal data.",
+      ask: "What can this AI tool do that a simpler tool couldn't?" },
+    { q: "Does the AI tool work equally well for different groups?",
       hint: "Look for results split out by race, gender, income or disability.",
       ask: "Can you show accuracy and error rates for each group?" },
-    { q: "Has anyone checked whether it treats some families unfairly?",
+    { q: "Have implicit racial/ethnic biases been identified, audited, and mitigated?",
       hint: "",
-      ask: "What bias testing was done, and what did it find?" }
+      ask: "What bias testing was done, what did it find, and what was changed?" }
   ]},
   { name: "Transparency", questions: [
-    { q: "Can they explain in plain words what it does and doesn't do?",
+    { q: "Have you received information in plain words about what the AI tool does and doesn't do?",
       hint: "If nobody can explain it simply, be careful.",
       ask: "What exactly does it do, and what should it never be used for?" },
-    { q: "Is there independent, published research showing it works?",
+    { q: "Is there independent, published research showing the AI tool works?",
       hint: "Not just the company's own claims.",
       ask: "Where is the outside evidence that it works for our kind of use?" },
     { q: "Do you know what data goes in, where it is stored, and who sees it?",
@@ -126,14 +134,14 @@ var SECTIONS = [
       ask: "Where does our data go? Is it stored or used to train the AI?" }
   ]},
   { name: "Human-Centeredness", questions: [
-    { q: "Does a trained person make the final decision, not the tool?",
+    { q: "Does a trained professional make the final decision, not the AI tool?",
       hint: "",
       ask: "Who reviews the tool's output before anything happens to a family?",
       key: true },
-    { q: "Can people be told it was used, and challenge or opt out?",
+    { q: "Can clients be told it was used, and challenge or opt out?",
       hint: "",
-      ask: "How are families told about it, and how can they object or appeal?" },
-    { q: "Can a person see why it gave a particular answer?",
+      ask: "How are clients told about it, and how can they object or appeal?" },
+    { q: "Are you able to understand the basics of how or why the AI tool gave a particular answer?",
       hint: "A score with no reason is hard to question in court or in a case plan.",
       ask: "Can it show why it gave this result for this person?" }
   ]},
@@ -145,33 +153,33 @@ var SECTIONS = [
       hint: "Chatbots can state false things with confidence.",
       ask: "How often is it wrong, and how do you catch mistakes?",
       key: true },
-    { q: "Is a named person or company accountable, and is staff trained to use it?",
+    { q: "Have you been provided training on how to use the AI tool, its limitations, and ways to evaluate its output?",
       hint: "",
-      ask: "Who is responsible if it makes a harmful mistake? What training is provided?" }
+      ask: "What training is provided, and who is responsible if it makes a harmful mistake?" }
   ]},
   { name: "Collaboration", questions: [
-    { q: "Were families, frontline staff or community members involved in building or testing it?",
-      hint: "",
-      ask: "Who outside the tech team helped design and review it?" },
+    { q: "Was it built and tested with people like the ones you serve?",
+      hint: "Same race, income, region, and family situations.",
+      ask: "Who was in the data used to build and test it? Do they match our clients?" },
     { q: "Is it clear who owns the data, and that it won't be sold or reused without consent?",
       hint: "",
       ask: "Who owns our data? Can it be shared or reused for anything else?" },
-    { q: "Is there an easy way to report problems and get them fixed?",
+    { q: "Is there an easy way to report problems related to the AI tool and get them fixed?",
       hint: "",
       ask: "How do we report a problem, and how fast do you respond?" }
   ]},
   { name: "Safety", questions: [
-    { q: "Were the benefits and possible harms weighed in writing?",
+    { q: "Were the benefits and possible harms weighed in creating and deploying the AI tool?",
       hint: "Harms include privacy loss, stigma, and wrongly labeling a family.",
       ask: "Can we see the written risk and benefit review?",
       key: true },
-    { q: "Are sensitive data (children, health, court records) strongly protected?",
+    { q: "Are sensitive data (e.g., child demographics, health, court records) strongly protected?",
       hint: "",
       ask: "What security and privacy protections apply to sensitive records?",
       key: true },
-    { q: "Is it checked after launch, and can it be switched off quickly?",
-      hint: "",
-      ask: "How is it monitored, and what would make you stop using it?" }
+    { q: "Is there an established protocol to stop using the AI tool should safety concerns arise?",
+      hint: "\"Stop\" rules should be set in advance, not decided after harm happens.",
+      ask: "What would cause you to stop using it, and who decides?" }
   ]}
 ];
 
@@ -189,12 +197,13 @@ var MSG_GOOD    = "Looks well handled. Still follow up on anything marked Not su
 
 /* ---- Code below runs the page. You should not need to change it. ---- */
 var STORE = "aiToolQuickCheck.v1";
-var state = { a: {}, tool: "" };
+var state = { a: {}, tool: "", purpose: "" };
 try { var s = JSON.parse(localStorage.getItem(STORE)); if (s && s.a) state = s; } catch (e) {}
 function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
 function esc(t) { return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
 document.querySelector(".lead").textContent = TITLE_LEAD;
+document.getElementById("purposeLabel").textContent = PURPOSE_QUESTION;
 
 var ALL = [];
 SECTIONS.forEach(function (sec, si) {
@@ -254,12 +263,13 @@ document.addEventListener("change", function (e) {
     if (e.target.type === "radio") { state.a[e.target.name] = e.target.value; save(); update(); }
 });
 document.getElementById("tool").addEventListener("input", function (e) { state.tool = e.target.value; save(); });
+document.getElementById("purpose").addEventListener("input", function (e) { state.purpose = e.target.value; save(); });
 document.getElementById("print").addEventListener("click", function () { window.print(); });
 document.getElementById("reset").addEventListener("click", function () {
     if (!confirm("Clear all answers?")) return;
-    state = { a: {}, tool: "" }; save();
+    state = { a: {}, tool: "", purpose: "" }; save();
     document.querySelectorAll("input[type=radio]").forEach(function (r) { r.checked = false; });
-    document.getElementById("tool").value = ""; update(); window.scrollTo(0, 0);
+    document.getElementById("tool").value = ""; document.getElementById("purpose").value = ""; update(); window.scrollTo(0, 0);
 });
 
 build();
@@ -267,6 +277,7 @@ Object.keys(state.a).forEach(function (id) {
     var el = document.getElementById("r" + id + state.a[id]); if (el) el.checked = true;
 });
 document.getElementById("tool").value = state.tool || "";
+document.getElementById("purpose").value = state.purpose || "";
 update();
 </script>
 </body>
