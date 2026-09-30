@@ -89,7 +89,7 @@
     </div>
 
     <footer>
-        This checklist is a screening aid and should not replace human verdict or professional advice. Nothing you enter leaves your device.
+        This checklist is a screening aid and should not replace human judgment or professional advice. Nothing you enter leaves your device.
         Based on the ETHICS framework (Lee et al., 2025, <i>JSSWR</i>, doi:10.1086/739116).
     </footer>
 </div>
@@ -112,7 +112,7 @@
    ===================================================================== */
 
 var PURPOSE_QUESTION = "For what purpose are you expected to use the AI tool in your work?";
-var TITLE_LEAD = "A checklist to assess whether an AI tool was developed and deployed with ethics in mind.";
+var TITLE_LEAD = "Use this checklist to assess whether an AI tool was developed and deployed with ethics in mind";
 
 var SECTIONS = [
   { name: "Equity", questions: [
@@ -128,44 +128,44 @@ var SECTIONS = [
   ]},
   { name: "Transparency", questions: [
     { q: "Have you received information in plain words about what the AI tool does and doesn't do?",
-      hint: "If nobody can explain it simply, be careful.",
-      ask: "What exactly does it do, and what should it never be used for?" },
+      hint: "If nobody can explain the AI tool simply, be careful.",
+      ask: "What exactly does the AI tool do, and what should it never be used for?" },
     { q: "Is there independent, published research showing the AI tool works?",
       hint: "Not just the company's own claims.",
-      ask: "Where is the outside evidence that it works for our kind of use?" },
+      ask: "Where is the outside evidence that the AI tool works for our kind of use?" },
     { q: "Do you know what data goes in, where it is stored, and who sees it?",
       hint: "Ask whether client information is saved, shared, or used to train the AI.",
-      ask: "Where does our data go? Is it stored or used to train the AI?" }
+      ask: "Where does the client data go? Are they stored or used to further train the AI tool?" }
   ]},
   { name: "Human-Centeredness", questions: [
     { q: "Does a trained professional make the final decision, not the AI tool?",
       hint: "The AI can suggest, but a person should decide and be able to override it.",
-      ask: "Who reviews the tool's output before anything happens to a family?",
+      ask: "Who reviews the AI tool's output before anything happens to a client?",
       key: true },
-    { q: "Can clients be told it was used, and challenge or opt out?",
+    { q: "Can clients be told the AI tool was used, and challenge or opt out?",
       hint: "Clients should know AI was used and have a way to object or appeal.",
-      ask: "How are clients told about it, and how can they object or appeal?" },
+      ask: "How are clients told about the AI tool, and how can they object or appeal?" },
     { q: "Are you able to understand the basics of how or why the AI tool gave a particular answer?",
-      hint: "Knowing how and why the AI reached an answer makes your use of it easier to defend.",
-      ask: "Can it show why it gave this result for this person?" }
+      hint: "Knowing how and why the AI reached an answer makes your use of the AI tool easier to defend.",
+      ask: "Can the AI tool show why it gave this result for this person?" }
   ]},
   { name: "Integrity", questions: [
-    { q: "Was it tested in real settings like yours?",
+    { q: "Was the AI tool tested in real settings like yours?",
       hint: "Not only in a lab or a different state or system.",
-      ask: "Where was it tested, and how similar is that to our setting?" },
-    { q: "Has it been checked for wrong or made-up answers?",
+      ask: "Where was the AI tool tested, and how similar is that to our setting?" },
+    { q: "Has the AI tool been checked for wrong or made-up answers?",
       hint: "Chatbots can state false things with confidence.",
-      ask: "How often is it wrong, and how do you catch mistakes?",
+      ask: "How often is the AI tool wrong, and how do you catch mistakes?",
       key: true },
     { q: "Have you been provided training on how to use the AI tool, its limitations, and ways to evaluate its output?",
-      hint: "Good training covers what the tool can't do and how to spot its mistakes.",
-      ask: "What training is provided, and who is responsible if it makes a harmful mistake?" }
+      hint: "Good training covers what the AI tool can't do and how to spot its mistakes.",
+      ask: "What training is provided, and who is responsible if the AI tool makes a harmful mistake?" }
   ]},
   { name: "Collaboration", questions: [
-    { q: "Was it built and tested with people like the ones you serve?",
-      hint: "Same race, income, region, and family situations.",
-      ask: "Who was in the data used to build and test it? Do they match our clients?" },
-    { q: "Is it clear who owns the data, and that it won't be sold or reused without consent?",
+    { q: "Was the AI tool built and tested with people like the ones you serve?",
+      hint: "Same race, income, region, and circumstances as your clients.",
+      ask: "Who was in the data used to build and test the AI tool? Do they match our clients?" },
+    { q: "Is it clear who owns the data, and that the data won't be sold or reused without consent?",
       hint: "Client information should not be sold or used for other purposes without consent.",
       ask: "Who owns our data? Can it be shared or reused for anything else?" },
     { q: "Is there an easy way to report problems related to the AI tool and get them fixed?",
@@ -174,7 +174,7 @@ var SECTIONS = [
   ]},
   { name: "Safety", questions: [
     { q: "Were the benefits and possible harms weighed in creating and deploying the AI tool?",
-      hint: "Harms include privacy loss, stigma, and wrongly labeling a family.",
+      hint: "Harms include privacy loss, stigma, and wrongly labeling a client.",
       ask: "Can we see the written risk and benefit review?",
       key: true },
     { q: "Are sensitive data (e.g., child demographics, health, court records) strongly protected?",
@@ -183,7 +183,7 @@ var SECTIONS = [
       key: true },
     { q: "Is there an established protocol to stop using the AI tool should safety concerns arise?",
       hint: "\"Stop\" rules should be set in advance, not decided after harm happens.",
-      ask: "What would cause you to stop using it, and who decides?" }
+      ask: "What would cause you to stop using the AI tool, and who decides?" }
   ]}
 ];
 
