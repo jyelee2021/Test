@@ -119,7 +119,7 @@ var SECTIONS = [
       hint: "Look for results split out by race, gender, income or disability.",
       ask: "Can you show accuracy and error rates for each group?" },
     { q: "Have implicit racial/ethnic biases been identified, audited, and mitigated?",
-      hint: "",
+      hint: "Bias can hide in the data even when race isn't listed as an input. Look for an independent check.",
       ask: "What bias testing was done, what did it find, and what was changed?" }
   ]},
   { name: "Transparency", questions: [
@@ -130,16 +130,16 @@ var SECTIONS = [
       hint: "Not just the company's own claims.",
       ask: "Where is the outside evidence that it works for our kind of use?" },
     { q: "Do you know what data goes in, where it is stored, and who sees it?",
-      hint: "",
+      hint: "Ask whether client information is saved, shared, or used to train the AI.",
       ask: "Where does our data go? Is it stored or used to train the AI?" }
   ]},
   { name: "Human-Centeredness", questions: [
     { q: "Does a trained professional make the final decision, not the AI tool?",
-      hint: "",
+      hint: "The AI can suggest, but a person should decide and be able to override it.",
       ask: "Who reviews the tool's output before anything happens to a family?",
       key: true },
     { q: "Can clients be told it was used, and challenge or opt out?",
-      hint: "",
+      hint: "Families should know AI was used and have a way to object or appeal.",
       ask: "How are clients told about it, and how can they object or appeal?" },
     { q: "Are you able to understand the basics of how or why the AI tool gave a particular answer?",
       hint: "A score with no reason is hard to question in court or in a case plan.",
@@ -154,7 +154,7 @@ var SECTIONS = [
       ask: "How often is it wrong, and how do you catch mistakes?",
       key: true },
     { q: "Have you been provided training on how to use the AI tool, its limitations, and ways to evaluate its output?",
-      hint: "",
+      hint: "Good training covers what the tool can't do and how to spot its mistakes.",
       ask: "What training is provided, and who is responsible if it makes a harmful mistake?" }
   ]},
   { name: "Collaboration", questions: [
@@ -162,10 +162,10 @@ var SECTIONS = [
       hint: "Same race, income, region, and family situations.",
       ask: "Who was in the data used to build and test it? Do they match our clients?" },
     { q: "Is it clear who owns the data, and that it won't be sold or reused without consent?",
-      hint: "",
+      hint: "Client information should not be sold or used for other purposes without consent.",
       ask: "Who owns our data? Can it be shared or reused for anything else?" },
     { q: "Is there an easy way to report problems related to the AI tool and get them fixed?",
-      hint: "",
+      hint: "Look for a named contact and a clear process, not just a general help email.",
       ask: "How do we report a problem, and how fast do you respond?" }
   ]},
   { name: "Safety", questions: [
@@ -174,7 +174,7 @@ var SECTIONS = [
       ask: "Can we see the written risk and benefit review?",
       key: true },
     { q: "Are sensitive data (e.g., child demographics, health, court records) strongly protected?",
-      hint: "",
+      hint: "Look for limited access, strong security, and clear rules on how long data is kept.",
       ask: "What security and privacy protections apply to sensitive records?",
       key: true },
     { q: "Is there an established protocol to stop using the AI tool should safety concerns arise?",
